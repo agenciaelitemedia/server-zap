@@ -1,0 +1,37 @@
+version: '3'
+
+services: 
+
+  elitemedia-server:
+    build: 
+      context: ./elitemedia-server
+      dockerfile: Dockerfile
+    restart: always
+    image: elitemedia-server
+    container_name: elitemedia-server
+    hostname: elitemedia-server
+    entrypoint: docker-entrypoint.sh yarn dev
+    volumes: 
+      - ./elitemedia-server/app:/home/node/app
+    networks: 
+      - elitemedia-network
+    tty: true
+  
+
+  elitemedia-nginx:
+    build: 
+      context: ./elitemedia-nginx
+      dockerfile: Dockerfile
+    container_name: elitemedia-nginx
+    entrypoint: nginx -g "daemon off;"
+    ports:
+      - "8081:8081"
+    networks: 
+      - elitemedia-network
+    depends_on:
+      - elitemedia-front
+
+networks: 
+  elitemedia-network:
+    name: elitemedia-network
+    driver: bridge 
